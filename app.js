@@ -23,26 +23,7 @@ let db = null;
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
 
-const allowedOrigins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",").map(url => url.trim()) : []),
-];
-
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-            return;
-        }
-        callback(new Error("CORS not allowed for this origin"));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 let intializeDbAndServer = async () => {
@@ -51,7 +32,7 @@ let intializeDbAndServer = async () => {
             filename: dbPath,
             driver: sqlite3.Database,
         });
-        app.listen(PORT, () => {
+        app.listen(PORT, "0.0.0.0", () => {
             console.log(`Server is running on port ${PORT}`);
         });
     } catch (e) {
